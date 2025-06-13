@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhyreable | Transparent Bitcoin Mining</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+
+    <style>
+        /* Apply the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark background to match your site's feel */
+            color: #E5E7EB; /* Light text for contrast */
+        }
+        /* Style for the FAQ accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-button.active + .accordion-content {
+            max-height: 500px; /* Adjust as needed */
+        }
+        .accordion-button .icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-button.active .icon {
+            transform: rotate(180deg);
+        }
+        /* Custom gradient for buttons and highlights */
+        .btc-gradient-text {
+            background: linear-gradient(90deg, #F7931A, #FFC94A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!--
+      This is the main container for your new landing page.
+      You can paste this entire HTML block into a custom HTML section in the GoDaddy site builder.
+    -->
+    <main>
+        <div class="container mx-auto px-6 py-12 md:py-20">
+
+            <!-- ===== HERO SECTION ===== -->
+        <!-- This is the first thing visitors see. The goal is to grab attention and state your value proposition clearly. -->
+        <section id="hero" class="text-center max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-4">
+                Transparent Bitcoin Mining for <span class="btc-gradient-text">Verifiable Returns</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                We combine low-cost energy with the latest-generation hardware to maximize your mining output. Invest with us and track your performance daily.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#invest" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 inline-block w-full sm:w-auto">
+                    Get Started
+                </a>
+                <button id="downloadButton" class="bg-transparent hover:bg-gray-700 text-amber-400 font-bold py-4 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 border border-amber-400 inline-block w-full sm:w-auto">
+                    Download Prospectus
+                </button>
+            </div>
+        </section>
+
+        <!-- ===== HOW IT WORKS SECTION ===== -->
+        <!-- This section builds interest by explaining your process in simple, easy-to-understand steps. -->
+        <section id="how-it-works" class="py-20 md:py-28">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Your Path to Mining Profits in 3 Steps</h2>
+            <div class="grid md:grid-cols-3 gap-8 md:gap-12 text-center">
+                <!-- Step 1 -->
+                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700">
+                    <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
+                        <i data-lucide="dollar-sign" class="w-8 h-8 text-amber-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">1. Choose Your Stake</h3>
+                    <p class="text-gray-400">Select an investment level that aligns with your goals. Your capital directly funds the acquisition and operation of high-efficiency mining hardware.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700">
+                    <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
+                        <i data-lucide="cpu" class="w-8 h-8 text-amber-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">2. We Deploy & Mine</h3>
+                    <p class="text-gray-400">We handle all the technical details—procurement, setup, and 24/7 maintenance at our secure, low-cost energy facilities.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700">
+                    <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
+                         <i data-lucide="bitcoin" class="w-8 h-8 text-amber-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">3. You Earn Bitcoin</h3>
+                    <p class="text-gray-400">Mining rewards are calculated daily and distributed directly to your account. Watch your investment grow in real-time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== OUR OPERATION / TRUST SECTION ===== -->
+        <!-- This is CRITICAL for building trust. Replace placeholders with real images of your setup and team. -->
+        <section id="operation" class="py-20 md:py-28 bg-gray-900 rounded-2xl px-6">
+             <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Our Operation: Where Your Investment Comes to Life</h2>
+             <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 btc-gradient-text">Transparency is Our Foundation</h3>
+                    <p class="text-gray-400 mb-4">We're not another faceless cloud mining platform. We're a team of engineers and finance professionals passionate about making Bitcoin accessible. Your investment is tied to real, physical hardware that you can see.</p>
+                    <p class="text-gray-400">Our advantage comes from strategic energy contracts and bulk hardware purchasing—benefits we pass directly on to you.</p>
+                    <!-- IMPORTANT: Introduce yourself here. Be authentic. -->
+                    <div class="mt-6 border-t border-amber-500/30 pt-6">
+                        <p class="font-bold text-white">John Doe, Founder</p>
+                        <p class="text-gray-400">"I started this project because I believe in the future of decentralized finance, but saw that the average person was being priced out of participating. We're here to change that."</p>
+                    </div>
+                </div>
+                <div>
+                    <!-- TODO: Replace these placeholder images with REAL photos of your mining rigs and facility. This is the most important trust signal you have. -->
+                    <img src="https://placehold.co/600x400/111827/F7931A?text=Our+Mining+Hardware" alt="Bitcoin mining hardware" class="rounded-lg shadow-2xl mb-4" onerror="this.onerror=null;this.src='https://placehold.co/600x400';">
+                    <p class="text-center text-gray-500 text-sm">A glimpse of our latest-generation ASIC miners at work.</p>
+                </div>
+             </div>
+        </section>
+
+        <!-- ===== THE OFFER / INVESTMENT TIERS ===== -->
+        <!-- Clearly define what people are investing in. Be specific with numbers. -->
+        <section id="offer" class="py-20 md:py-28">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Choose Your Mining Package</h2>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Tier 1 -->
+                <div class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 flex flex-col">
+                    <h3 class="text-2xl font-bold mb-2">Starter Miner</h3>
+                    <p class="text-amber-400 text-4xl font-black mb-4">$500</p>
+                    <ul class="space-y-3 text-gray-300 mb-8 flex-grow">
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Estimated X TH/s Hashrate</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Daily Payouts</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>24/7 Monitoring Dashboard</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>All-inclusive fees</li>
+                    </ul>
+                    <a href="#invest" class="w-full text-center bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition">Select Plan</a>
+                </div>
+                <!-- Tier 2 (Highlight) -->
+                <div class="bg-gray-800 p-8 rounded-2xl border-2 border-amber-500 flex flex-col relative">
+                    <span class="absolute top-0 right-8 -translate-y-1/2 bg-amber-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</span>
+                    <h3 class="text-2xl font-bold mb-2">Pro Miner</h3>
+                    <p class="text-amber-400 text-4xl font-black mb-4">$2,500</p>
+                    <ul class="space-y-3 text-gray-300 mb-8 flex-grow">
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Estimated Y TH/s Hashrate</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Daily Payouts</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>24/7 Monitoring Dashboard</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>All-inclusive fees</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Priority Hardware Allocation</li>
+                    </ul>
+                    <a href="#invest" class="w-full text-center bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition">Select Plan</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FAQ SECTION ===== -->
+        <!-- Answer common questions proactively to build confidence and reduce support requests. -->
+        <section id="faq" class="py-20 md:py-28 max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                        <span>What are the risks?</span>
+                        <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                        <p>All investments carry risk. The primary risks in Bitcoin mining are the volatility of Bitcoin's price and increases in global mining difficulty. We mitigate these by operating with very low energy costs, giving our operation a higher resilience to price fluctuations. We encourage you to invest only what you are comfortable with.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                        <span>How are fees calculated?</span>
+                        <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                        <p>Our model is simple. The investment packages include all operational costs, including electricity, maintenance, and hosting for the lifetime of the hardware. There are no hidden monthly fees. We retain a small percentage of the Bitcoin mined as our service fee, which aligns our success with yours.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 3 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                        <span>How do I withdraw my earnings?</span>
+                        <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                        <p>Your mined Bitcoin is credited to your account daily. You can request a withdrawal of your earnings to your personal Bitcoin wallet at any time. Withdrawals are processed within 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CTA / LEAD GENERATION FORM ===== -->
+        <!-- This is the Action stage of the funnel. Keep the form simple to maximize conversions. -->
+        <section id="invest" class="py-20 md:py-28">
+            <div class="bg-gray-800 rounded-2xl p-8 md:p-12 max-w-4xl mx-auto text-center border border-amber-500/50">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Start Mining?</h2>
+                <p class="text-gray-400 mb-8">Fill out the form below to receive our detailed investment prospectus and start the onboarding process. An investment advisor will reach out to you within one business day.</p>
+
+                <!--
+                  FORM SETUP:
+                  To make this form work, you need a backend service. A free and easy option is Formspree (formspree.io).
+                  1. Go to Formspree and create a new form endpoint.
+                  2. Replace "YOUR_FORM_ENDPOINT" in the 'action' attribute below with your unique Formspree URL.
+                -->
+                <form action="https://formspree.io/f/YOUR_FORM_ENDPOINT" method="POST" class="max-w-xl mx-auto">
+                    <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                        <input type="text" name="name" placeholder="Your Name" required class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <input type="email" name="email" placeholder="Your Email" required class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <select name="investment_level" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 mb-4 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <option>Interested in: Starter Miner ($500)</option>
+                        <option>Interested in: Pro Miner ($2,500)</option>
+                        <option>Interested in: Larger Investment (+$10k)</option>
+                    </select>
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-lg transition-transform transform hover:scale-105">
+                        Request Prospectus
+                    </button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ===== FOOTER & DISCLAIMER ===== -->
+        <footer class="text-center text-gray-500 text-sm pt-12 border-t border-gray-800">
+            <p class="mb-4">&copy; 2025 Unhyreable.com. All Rights Reserved.</p>
+            <p class="max-w-3xl mx-auto">
+                <strong>Risk Disclosure:</strong> Investing in cryptocurrency mining involves significant risk and is not suitable for all investors. The value of Bitcoin is highly volatile and can fluctuate dramatically. Past performance is not indicative of future results. Please conduct your own research and consider your financial situation before investing. This is not financial advice.
+            </p>
+        </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // JavaScript for the FAQ Accordion
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // First, close all other open accordions
+                document.querySelectorAll('.accordion-button').forEach(otherButton => {
+                    if (otherButton !== button) {
+                        otherButton.classList.remove('active');
+                        otherButton.nextElementSibling.style.maxHeight = null;
+                    }
+                });
+
+                // Then, toggle the clicked one
+                button.classList.toggle('active');
+                const accordionContent = button.nextElementSibling;
+                if (button.classList.contains('active')) {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+                } else {
+                    accordionContent.style.maxHeight = null;
+                }
+            });
+        });
+
+        // JavaScript for the Download Prospectus button
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            // Gather the content for the prospectus text file.
+            const prospectusContent = `
+UNHYREABLE.COM - BITCOIN MINING INVESTMENT PROSPECTUS
+=====================================================
+
+OVERVIEW
+--------
+Transparent Bitcoin Mining for Verifiable Returns.
+We combine low-cost energy with the latest-generation hardware to maximize your mining output. Invest with us and track your performance daily.
+
+HOW IT WORKS
+------------
+1. Choose Your Stake: Select an investment level that aligns with your goals. Your capital directly funds the acquisition and operation of high-efficiency mining hardware.
+2. We Deploy & Mine: We handle all the technical details—procurement, setup, and 24/7 maintenance at our secure, low-cost energy facilities.
+3. You Earn Bitcoin: Mining rewards are calculated daily and distributed directly to your account. Watch your investment grow in real-time.
+
+OUR OPERATION
+-------------
+Transparency is Our Foundation. We're a team of engineers and finance professionals passionate about making Bitcoin accessible. Your investment is tied to real, physical hardware. Our advantage comes from strategic energy contracts and bulk hardware purchasing.
+
+INVESTMENT PACKAGES
+-------------------
+- Starter Miner: $500
+  - Estimated X TH/s Hashrate
+  - Daily Payouts
+  - 24/7 Monitoring Dashboard
+  - All-inclusive fees
+
+- Pro Miner: $2,500
+  - Estimated Y TH/s Hashrate
+  - Daily Payouts
+  - 24/7 Monitoring Dashboard
+  - All-inclusive fees
+  - Priority Hardware Allocation
+
+RISK DISCLOSURE
+---------------
+Investing in cryptocurrency mining involves significant risk and is not suitable for all investors. The value of Bitcoin is highly volatile and can fluctuate dramatically. Past performance is not indicative of future results. Please conduct your own research and consider your financial situation before investing. This is not financial advice.
+
+CONTACT
+-------
+For more details or to begin the investment process, please fill out the form at unhyreable.com/#invest.
+            `;
+
+            // Create a Blob from the content
+            const blob = new Blob([prospectusContent.trim()], { type: 'text/plain' });
+
+            // Create a temporary anchor element to trigger the download
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            document.body.appendChild(a);
+
+            // Set the href to a URL created from the Blob and set the download attribute
+            const url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = 'Unhyreable_Prospectus.txt';
+
+            // Trigger a click and clean up
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
+    </script>
+
+</body>
+</html>
