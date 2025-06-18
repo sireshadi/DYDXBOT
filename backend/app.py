@@ -1,275 +1,307 @@
-from flask import Flask, request, jsonify, redirect, url_for, make_response, abort, send_from_directory
+from flask import Flask, request, jsonify, redirect, url_for, send_from_directory, abort, make_response, session
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from database import db, init_db
-from models import User, FunnelLink, Lead # Added Lead here
-import click
-import re # For path validation
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+import os
+import sys
+from datetime import datetime, timedelta # Added timedelta for cookie expiry
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here' # Important: Change this in production!
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///unhyreable.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
+# Database setup
+db = SQLAlchemy()
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login' # Or a conceptual frontend login route name
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    referred_by_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    # Relationship: Users referred by this user
+    referrals = db.relationship('User', foreign_keys=[referred_by_user_id], backref=db.backref('referrer', remote_side=[id]), lazy='dynamic')
 
-@app.route('/')
-def index():
-    # Check for referral cookie and pass it to the frontend or use it server-side
-    referral_funnel_path = request.cookies.get('referral_funnel_path')
-    # For now, just serve index.html. Later, this might pass data to the template.
-    # If index.html is in the root:
-    return send_from_directory('../', 'index.html')
-    # If index.html is in a static folder at the root:
-    # return send_from_directory('../static', 'index.html')
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
-# --- Email Sending Utility ---
-def send_email_notification(to_email, subject, body):
-    """
-    Sends an email. For now, prints to console.
-    Replace with actual email sending logic (e.g., smtplib, SendGrid, etc.) in production.
-    """
-    import sys # Add sys import for flushing
-    print(f"--- SENDING EMAIL ---")
-    print(f"To: {to_email}")
-    print(f"Subject: {subject}")
-    print(f"Body: {body}")
-    print(f"--- EMAIL END ---")
-    sys.stdout.flush() # Explicitly flush stdout
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
-@app.route('/api/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    # Keep handling direct referred_by_user_id from payload for now,
-    # but prioritize cookie-based referral for funnel tracking.
-    direct_referred_by_user_id = data.get('referred_by_user_id')
+class FunnelLink(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    path_identifier = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    click_count = db.Column(db.Integer, default=0)
+    
+    user = db.relationship('User', backref=db.backref('funnel_links', lazy='dynamic'))
+
+class Lead(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    phone = db.Column(db.String(50), nullable=True)
+    investment_interest = db.Column(db.String(200), nullable=True)
+    language = db.Column(db.String(10), nullable=True)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    funnel_link_id = db.Column(db.Integer, db.ForeignKey('funnel_link.id'), nullable=True)
+    attributed_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # Owner of the funnel link
+
+    # Relationships
+    funnel_link = db.relationship('FunnelLink', backref=db.backref('leads', lazy='dynamic'))
+    attributed_user = db.relationship('User', backref=db.backref('attributed_leads', lazy='dynamic'))
 
 
-    if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
+def create_app():
+    app = Flask(__name__, static_folder=None) # No default static folder from backend
+    
+    # Configuration
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key_for_development') # IMPORTANT: Change this in production!
+    # Construct SQLite path relative to the 'backend' directory where app.py is
+    instance_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', f"sqlite:///{os.path.join(instance_folder_path, 'unhyreable.db')}")
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({'error': 'Email already exists'}), 400
+    # Ensure the instance folder exists
+    if not os.path.exists(instance_folder_path):
+        os.makedirs(instance_folder_path)
 
-    hashed_password = generate_password_hash(password)
+    db.init_app(app)
 
-    referrer_id_from_cookie = None
-    referral_funnel_path = request.cookies.get('referral_funnel_path')
-    used_funnel_link = None
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'login_page' # Route function name for frontend login page
+    # login_manager.login_message_category = "info" # Optional: for flashing messages
 
-    if referral_funnel_path:
-        funnel_link_obj = FunnelLink.query.filter_by(path_identifier=referral_funnel_path).first()
-        if funnel_link_obj:
-            referrer_id_from_cookie = funnel_link_obj.user_id
-            used_funnel_link = funnel_link_obj # Store for notification
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-    new_user = User(email=email, password_hash=hashed_password)
-
-    if referrer_id_from_cookie:
-        new_user.referred_by_user_id = referrer_id_from_cookie
-    elif direct_referred_by_user_id: # Fallback to payload if no cookie referral
-        # Ensure this user exists if provided directly
-        if User.query.get(direct_referred_by_user_id):
-             new_user.referred_by_user_id = direct_referred_by_user_id
-        else:
-            # Optionally handle if direct_referred_by_user_id is invalid (e.g., log, ignore, or error)
-            print(f"Warning: Invalid direct_referred_by_user_id '{direct_referred_by_user_id}' provided during registration for {email}.")
-
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    # Send notification if referred
-    if new_user.referred_by_user_id:
-        referrer = User.query.get(new_user.referred_by_user_id)
-        if referrer and used_funnel_link: # Make sure we have a funnel link for the context
-            subject = "New User Signup Referral!"
-            body = f"Congratulations! User {new_user.email} has signed up via your funnel link: {used_funnel_link.path_identifier}."
-            send_email_notification(referrer.email, subject, body)
-        elif referrer: # Generic referral if no specific funnel link was involved (e.g. direct ID)
-            subject = "New User Signup Referral!"
-            body = f"Congratulations! User {new_user.email} has signed up and mentioned you as the referrer."
-            send_email_notification(referrer.email, subject, body)
+    # --- Helper Function for Email (Console Simulation) ---
+    def send_email_notification(to_email, subject, body):
+        print(f"--- EMAIL SIMULATION ---")
+        print(f"To: {to_email}")
+        print(f"Subject: {subject}")
+        print(f"Body: {body}")
+        print(f"--- END EMAIL SIMULATION ---")
+        sys.stdout.flush()
 
 
-    return jsonify({'message': 'User registered successfully'}), 201
+    # --- Static File Serving Routes (from project root) ---
+    # Assumes app.py is in 'backend' and HTML/JS files are in parent directory ('../')
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
 
-@app.route('/api/submit_lead', methods=['POST'])
-def submit_lead():
-    data = request.get_json()
-    name = data.get('name')
-    email = data.get('email')
-    phone = data.get('phone')
-    investment_interest = data.get('investment_interest')
-    language = data.get('language') # Assuming 'language' comes from the form
+    @app.route('/')
+    def index():
+        return send_from_directory(project_root, 'index.html')
 
-    if not name or not email:
-        return jsonify({'error': 'Name and email are required for lead submission.'}), 400
+    @app.route('/signup.html')
+    def signup_page():
+        return send_from_directory(project_root, 'signup.html')
 
-    funnel_id = None
-    attr_user_id = None
-    referral_funnel_path = request.cookies.get('referral_funnel_path')
+    @app.route('/login.html')
+    def login_page():
+        return send_from_directory(project_root, 'login.html')
 
-    if referral_funnel_path:
-        funnel_link = FunnelLink.query.filter_by(path_identifier=referral_funnel_path).first()
-        if funnel_link:
-            funnel_id = funnel_link.id
-            attr_user_id = funnel_link.user_id
-            # Optionally, you could increment funnel_link.click_count here as well,
-            # or decide that only direct visits to the funnel link increment it.
-            # For now, we assume visit to /<funnel_path> handles click_count.
+    @app.route('/dashboard.html')
+    @login_required
+    def dashboard_page():
+        return send_from_directory(project_root, 'dashboard.html')
 
-    new_lead = Lead(
-        name=name,
-        email=email,
-        phone=phone,
-        investment_interest=investment_interest,
-        language=language,
-        funnel_link_id=funnel_id,
-        attributed_user_id=attr_user_id
-    )
+    @app.route('/auth.js')
+    def auth_js_file():
+        return send_from_directory(project_root, 'auth.js')
 
-    db.session.add(new_lead)
-    db.session.commit()
+    @app.route('/dashboard.js')
+    def dashboard_js_file():
+        return send_from_directory(project_root, 'dashboard.js')
 
-    # Future: Notify admin about the new lead
-    # send_email_notification(app.config['ADMIN_EMAIL'], "New Lead Submitted", f"Lead: {name}, {email}")
+    # --- API Routes ---
+    @app.route('/api/register', methods=['POST'])
+    def register():
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "No input data provided"}), 400
+        email = data.get('email')
+        password = data.get('password')
 
-    return jsonify({'message': 'Lead submitted successfully'}), 201
+        if not email or not password:
+            return jsonify({"message": "Email and password are required"}), 400
+        if User.query.filter_by(email=email).first():
+            return jsonify({"message": "Email already registered"}), 400
 
-@app.route('/api/check_auth', methods=['GET'])
-def check_auth():
-    if current_user.is_authenticated:
-        return jsonify({
-            "is_authenticated": True,
-            "email": current_user.email,
-            "user_id": current_user.id
-        }), 200
-    else:
-        return jsonify({"is_authenticated": False}), 200 # Or 401, but 200 with False is fine for client check
+        new_user = User(email=email)
+        new_user.set_password(password)
+        
+        referrer_id_from_cookie = None
+        referral_path = request.cookies.get('referral_funnel_path')
+        if referral_path:
+            funnel_link_obj = FunnelLink.query.filter_by(path_identifier=referral_path).first()
+            if funnel_link_obj:
+                referrer_id_from_cookie = funnel_link_obj.user_id
+        
+        if referrer_id_from_cookie:
+            new_user.referred_by_user_id = referrer_id_from_cookie
 
-@app.route('/api/funnels/my_links', methods=['GET'])
-@login_required
-def my_funnel_links():
-    links = FunnelLink.query.filter_by(user_id=current_user.id).order_by(FunnelLink.created_at.desc()).all()
-    results = []
-    # Assuming the app is hosted at unhyreable.com for constructing full_url
-    # In a real app, this domain should come from config or request headers.
-    base_url = "http://unhyreable.com/" # Or request.host_url if served by same domain
-
-    for link in links:
-        # Count leads for this specific funnel link
-        leads_count = Lead.query.filter_by(funnel_link_id=link.id).count()
-        results.append({
-            "id": link.id,
-            "path_identifier": link.path_identifier,
-            "full_url": f"{base_url}{link.path_identifier}",
-            "click_count": link.click_count,
-            "leads_generated_count": leads_count
-        })
-    return jsonify(results), 200
-
-@app.route('/api/analytics/my_referred_signups_count', methods=['GET'])
-@login_required
-def my_referred_signups_count():
-    count = User.query.filter_by(referred_by_user_id=current_user.id).count()
-    return jsonify({"referred_signups_count": count}), 200
-
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
-
-    user = User.query.filter_by(email=email).first()
-
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({'error': 'Invalid email or password'}), 401
-
-    login_user(user)
-    return jsonify({'message': 'Login successful'}), 200
-
-@app.route('/api/logout', methods=['POST'])
-@login_required
-def logout():
-    logout_user()
-    return jsonify({'message': 'Logout successful'}), 200
-
-@app.route('/api/funnels/create', methods=['POST'])
-@login_required
-def create_funnel():
-    data = request.get_json()
-    path_identifier = data.get('path_identifier')
-
-    if not path_identifier:
-        return jsonify({'error': 'Path identifier is required'}), 400
-
-    # Validate path_identifier: only letters, numbers, hyphens, underscores
-    if not re.match(r"^[a-zA-Z0-9_-]+$", path_identifier):
-        return jsonify({'error': 'Invalid characters in path. Use letters, numbers, hyphens, or underscores.'}), 400
-
-    if len(path_identifier) < 3 or len(path_identifier) > 50:
-        return jsonify({'error': 'Path identifier must be between 3 and 50 characters.'}), 400
-
-
-    existing_funnel = FunnelLink.query.filter_by(path_identifier=path_identifier).first()
-    if existing_funnel:
-        return jsonify({'error': 'This path identifier is already taken.'}), 400
-
-    new_funnel = FunnelLink(
-        user_id=current_user.id,
-        path_identifier=path_identifier,
-        click_count=0 # Initial click count
-    )
-    db.session.add(new_funnel)
-    db.session.commit()
-
-    return jsonify({'message': 'Funnel link created successfully', 'funnel_path': path_identifier}), 201
-
-@app.route('/<funnel_path>')
-def funnel_redirect(funnel_path):
-    funnel = FunnelLink.query.filter_by(path_identifier=funnel_path).first()
-    if funnel:
-        funnel.click_count += 1
+        db.session.add(new_user)
         db.session.commit()
 
-        response = make_response(redirect(url_for('index')))
-        # Set cookie for 30 days
-        response.set_cookie('referral_funnel_path', funnel_path, max_age=30*24*60*60, httponly=True, samesite='Lax')
-        return response
-    else:
-        # If you want to serve index.html for any non-funnel path, do this:
-        # return send_from_directory('../', 'index.html')
-        # Or, if it should strictly be a 404 for unknown funnels:
-        abort(404)
+        if new_user.referred_by_user_id:
+            referrer = User.query.get(new_user.referred_by_user_id)
+            # Check referral_path to ensure it was through a link for this specific notification context
+            if referrer and referral_path: 
+                send_email_notification(
+                    referrer.email,
+                    "New User Signup Referral!",
+                    f"Congratulations! User {new_user.email} has signed up via your funnel link: {referral_path}."
+                )
+        return jsonify({"message": "User registered successfully"}), 201
 
+    @app.route('/api/login', methods=['POST'])
+    def login():
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "No input data provided"}), 400
+        email = data.get('email')
+        password = data.get('password')
+        user = User.query.filter_by(email=email).first()
 
-@app.cli.command('init-db')
-def init_db_command():
-    """Initializes the database and creates tables."""
-    with app.app_context():
-        # This will create all tables defined in models.py
-        db.create_all()
-    print('Initialized the database and created tables (User, FunnelLink, Lead).')
+        if user and user.check_password(password):
+            login_user(user) # Flask-Login handles session
+            return jsonify({"message": "Login successful", "email": user.email}), 200
+        return jsonify({"message": "Invalid email or password"}), 401
 
-if __name__ == '__main__':
-    # Make sure the app context is available for operations like db.create_all()
-    with app.app_context():
-        # You might want to run init_db() here automatically for development,
-        # or rely on the flask init-db command.
-        # For this setup, we'll rely on the command.
-        pass
-    app.run(debug=True)
+    @app.route('/api/logout', methods=['POST'])
+    @login_required
+    def logout():
+        logout_user()
+        return jsonify({"message": "Logout successful"}), 200
+
+    @app.route('/api/check_auth', methods=['GET'])
+    def check_auth():
+        if current_user.is_authenticated:
+            return jsonify({"is_authenticated": True, "email": current_user.email, "user_id": current_user.id})
+        return jsonify({"is_authenticated": False})
+
+    @app.route('/api/funnels/create', methods=['POST'])
+    @login_required
+    def create_funnel():
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "No input data provided"}), 400
+        path_identifier = data.get('path_identifier')
+
+        if not path_identifier:
+            return jsonify({"message": "Path identifier is required"}), 400
+        
+        if not path_identifier.isalnum() or ' ' in path_identifier:
+             return jsonify({"message": "Path can only contain letters and numbers, no spaces."}), 400
+        if len(path_identifier) < 3 or len(path_identifier) > 50:
+            return jsonify({"message": "Path must be between 3 and 50 characters."}), 400
+
+        if FunnelLink.query.filter_by(path_identifier=path_identifier).first():
+            return jsonify({"message": "This path is already taken"}), 400
+
+        new_link = FunnelLink(user_id=current_user.id, path_identifier=path_identifier)
+        db.session.add(new_link)
+        db.session.commit()
+        return jsonify({"message": "Funnel link created successfully", "link_id": new_link.id, "path": new_link.path_identifier}), 201
+
+    @app.route('/api/funnels/my_links', methods=['GET'])
+    @login_required
+    def get_my_funnels():
+        links_data = []
+        
+        # Determine base_url more carefully for display
+        # For local dev, request.url_root is fine. For production, you might configure this.
+        display_base_url = request.host_url # e.g., http://127.0.0.1:5000/
+        # If you want to always show 'unhyreable.com' for display purposes, regardless of actual host:
+        # display_base_url = "http://unhyreable.com/"
+
+        for link in current_user.funnel_links:
+            leads_count = Lead.query.filter_by(funnel_link_id=link.id).count()
+            links_data.append({
+                "id": link.id,
+                "path_identifier": link.path_identifier,
+                "full_url": f"{display_base_url.rstrip('/')}/{link.path_identifier}",
+                "click_count": link.click_count,
+                "leads_generated_count": leads_count
+            })
+        return jsonify(links_data)
+
+    @app.route('/api/analytics/my_referred_signups_count', methods=['GET'])
+    @login_required
+    def get_my_referred_signups_count():
+        count = User.query.filter_by(referred_by_user_id=current_user.id).count()
+        return jsonify({"referred_signups_count": count})
+    
+    @app.route('/api/submit_lead', methods=['POST'])
+    def submit_lead():
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "No input data provided"}), 400
+        
+        name = data.get('name')
+        email = data.get('email')
+        if not name or not email: 
+            return jsonify({"message": "Name and email are required for lead submission."}), 400
+
+        new_lead = Lead(
+            name=name,
+            email=email,
+            phone=data.get('phone'),
+            investment_interest=data.get('investment_interest'),
+            language=data.get('language')
+        )
+
+        referral_path = request.cookies.get('referral_funnel_path')
+        if referral_path:
+            funnel_link_obj = FunnelLink.query.filter_by(path_identifier=referral_path).first()
+            if funnel_link_obj:
+                new_lead.funnel_link_id = funnel_link_obj.id
+                new_lead.attributed_user_id = funnel_link_obj.user_id
+        
+        db.session.add(new_lead)
+        db.session.commit()
+
+        send_email_notification(
+            "admin@example.com", # Placeholder admin email
+            "New Lead Submitted",
+            f"A new lead has been submitted:\nName: {name}\nEmail: {email}\nPhone: {data.get('phone')}\nInterest: {data.get('investment_interest')}"
+        )
+        return jsonify({"message": "Lead submitted successfully"}), 201
+
+    # --- Funnel Link Redirection Route ---
+    @app.route('/<path:funnel_path>') # Use <path:> to capture arbitrary strings including those with non-alphanumeric chars if needed, though our creation logic is stricter.
+    def funnel_redirect(funnel_path):
+        link = FunnelLink.query.filter_by(path_identifier=funnel_path).first()
+        if link:
+            link.click_count += 1
+            db.session.commit()
+            
+            response = make_response(redirect(url_for('index')))
+            response.set_cookie('referral_funnel_path', funnel_path, max_age=timedelta(days=7).total_seconds(), httponly=True, samesite='Lax')
+            return response
+        else:
+            # If not a funnel link, it might be another static file or a mistake
+            # For a SPA, you might redirect to index.html. For this setup, 404 is clearer if no other route matches.
+            abort(404) 
+
+    # --- CLI command to initialize DB ---
+    @app.cli.command('init-db')
+    def init_db_command():
+        """Initializes the database and creates tables."""
+        # No need to check/create instance_folder here, Flask does it if using app_context for db ops.
+        with app.app_context(): 
+            db.create_all()
+        print('Initialized the database and created tables: User, FunnelLink, Lead.')
+
+    return app
+
+# This is for direct execution `python app.py` (less common for Flask apps now)
+# For development, `flask run` is preferred after setting FLASK_APP=app:create_app (or just FLASK_APP=app.py if app is created at global scope)
+# To use `create_app` factory pattern with `flask run`, set FLASK_APP=app:create_app
+# Example: export FLASK_APP=app:create_app then flask run
+
+# If you want to be able to run `python app.py` directly:
+# if __name__ == '__main__':
+#     app = create_app()
+#     app.run(debug=True) # Set debug=False in production
