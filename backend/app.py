@@ -30,6 +30,28 @@ def index():
     # If index.html is in a static folder at the root:
     # return send_from_directory('../static', 'index.html')
 
+# --- Static File Serving Routes ---
+@app.route('/signup.html')
+def signup_page():
+    return send_from_directory('../', 'signup.html')
+
+@app.route('/login.html')
+def login_page():
+    return send_from_directory('../', 'login.html')
+
+@app.route('/dashboard.html')
+@login_required
+def dashboard_page():
+    return send_from_directory('../', 'dashboard.html')
+
+@app.route('/auth.js')
+def auth_js_file():
+    return send_from_directory('../', 'auth.js')
+
+@app.route('/dashboard.js')
+def dashboard_js_file():
+    return send_from_directory('../', 'dashboard.js')
+
 # --- Email Sending Utility ---
 def send_email_notification(to_email, subject, body):
     """
