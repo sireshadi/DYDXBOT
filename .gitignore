@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtualenv
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# SQLite database file
+# (Assuming our instance folder is directly under backend, and .gitignore is in project root)
+# To ignore the instance folder within backend:
+backend/instance/
+# If you want to be more specific and only ignore .db files within instance:
+# backend/instance/*.db
+# backend/instance/*.sqlite
+# backend/instance/*.sqlite3
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sublime-workspace
+
+# OS specific
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Netlify (if any local Netlify state files are created, though usually not committed)
+.netlify/
+
+# If you have other local config files, add them too.
+# e.g. local_settings.py
