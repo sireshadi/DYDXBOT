@@ -7,28 +7,44 @@
     <script src="https://cdn.tailwindcss.com" defer></script>
     <link rel="stylesheet" href="style.css"> <!-- Or use Tailwind classes directly -->
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-center">Sign Up</h1>
-        <form id="signupForm">
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-                <input type="email" id="email" name="email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
-                <input type="password" id="password" name="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="referred_by_user_id" class="block text-gray-700 text-sm font-bold mb-2">Referred By User ID (Optional):</label>
-                <input type="number" id="referred_by_user_id" name="referred_by_user_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                Sign Up
-            </button>
-        </form>
-        <div id="message" class="mt-4 text-center"></div>
+<body class="bg-gray-100"> <!-- Removed flex and h-screen for full-page layout -->
+    <nav class="bg-gray-900 text-gray-300 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold text-amber-500 hover:text-amber-400">Unhyreable</a>
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:text-amber-400">Home</a></li>
+                <li><a href="login.html" class="hover:text-amber-400">Login</a></li>
+                <li><a href="signup.html" class="hover:text-amber-400 font-semibold text-white">Sign Up</a></li> <!-- Active style for Sign Up -->
+                <li><a href="dashboard.html" class="hover:text-amber-400">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main content centered -->
+    <div class="flex items-center justify-center" style="min-height: calc(100vh - 4rem);"> <!-- Adjust 4rem based on nav height -->
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md mt-8"> <!-- Added mt-8 for spacing -->
+            <h1 class="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+            <form id="signupForm">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                    <input type="email" id="email" name="email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+                    <input type="password" id="password" name="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="referred_by_user_id" class="block text-gray-700 text-sm font-bold mb-2">Referred By User ID (Optional):</label>
+                    <input type="number" id="referred_by_user_id" name="referred_by_user_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                    Sign Up
+                </button>
+            </form>
+            <div id="message" class="mt-4 text-center"></div>
+        </div>
     </div>
+
     <script src="auth.js"></script>
 </body>
 </html>
