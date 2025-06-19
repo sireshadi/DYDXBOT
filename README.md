@@ -43,3 +43,25 @@ Please note the following placeholders in `index.html` that need to be updated w
 - **Mining Hardware Image:** The placeholder image `https://placehold.co/600x400/...` should be replaced with a real photo of the mining hardware.
 - **Hashrate Estimates:** "Estimated X TH/s" and "Estimated Y TH/s" in the "Investment Tiers" section.
 - **Form Endpoint:** `YOUR_FORM_ENDPOINT` in the `form` tag's `action` attribute needs to be replaced with a valid Formspree (or other service) URL.
+
+## Deploying to Netlify (Caveats)
+
+This project can be configured for deployment to Netlify using the provided `netlify.toml` and `netlify_functions/api_handler.py`. However, due to the nature of serverless environments and the current architecture of this Flask application, there are significant caveats for a production deployment:
+
+1.  **Database (SQLite):**
+    *   **Issue:** The application uses SQLite, which stores the database in a local file (`instance/unhyreable.db`). Netlify serverless functions have ephemeral filesystems. This means any data written to the SQLite database (new users, pages, links, etc.) will likely be lost between function invocations or will not be persisted reliably.
+    *   **Recommendation:** For a functional deployment on Netlify, you **must migrate to a cloud-hosted database** (e.g., Neon, Supabase, PlanetScale, AWS RDS, Google Cloud SQL, FaunaDB). The `SQLALCHEMY_DATABASE_URI` in `backend/app.py` should be configured via Netlify environment variables to point to your cloud database.
+
+2.  **User File Uploads (Local Storage):**
+    *   **Issue:** User-uploaded assets (images, favicons) are currently stored in the `instance/user_uploads/` directory on the server's local filesystem. Similar to SQLite, this storage is ephemeral in Netlify serverless functions. Uploaded files will not persist.
+    *   **Recommendation:** For persistent file storage on Netlify, integrate **a dedicated cloud object storage service** (e.g., AWS S3, Google Cloud Storage, Cloudinary). The file upload logic in `backend/app.py` needs to be modified to upload files to this service, and asset URLs will need to reference the object storage.
+
+3.  **`app.instance_path` Reliance:**
+    *   **Issue:** The application relies on `app.instance_path` for both the SQLite database and local file uploads. This path is not reliably persistent or writable in a scalable way in serverless environments.
+    *   **Recommendation:** Transitioning to cloud databases and object storage (as mentioned above) will reduce the reliance on a persistent local `instance_path`.
+
+4.  **Session Management:**
+    *   Flask's default client-side cookie-based sessions should work. Ensure your `app.secret_key` is set as a secure environment variable in your Netlify deployment settings.
+
+**Conclusion for Netlify Deployment:**
+While `netlify.toml` and the serverless handler enable the Flask app to *run* on Netlify, **the current data persistence strategy (SQLite and local file uploads) is not compatible with a production serverless environment.** You will need to re-architect data and file storage to use cloud-based services for a stable and scalable deployment on Netlify.

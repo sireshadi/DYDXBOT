@@ -2,3 +2,6 @@ Flask
 Flask-SQLAlchemy
 Werkzeug
 Flask-Login
+serverless-wsgi
+gunicorn
+bleach

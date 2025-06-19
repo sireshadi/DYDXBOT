@@ -1,0 +1,37 @@
+[build]
+  command = "pip install -r backend/requirements.txt"
+  publish = "/" # Root directory for static files
+  functions = "netlify_functions" # Netlify will look for functions here
+
+[build.environment]
+  PYTHON_VERSION = "3.10"
+
+# Redirects: Processed in order.
+# Specific backend routes first.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api_handler/:splat" # :splat captures the wildcard
+  status = 200 # Rewrite
+
+[[redirects]]
+  from = "/user_uploads/*"
+  to = "/.netlify/functions/api_handler/user_uploads/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard.html" # Assuming this needs @login_required
+  to = "/.netlify/functions/api_handler/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/editor.html" # Assuming this needs @login_required
+  to = "/.netlify/functions/api_handler/editor.html"
+  status = 200
+
+# Catch-all for any other path that wasn't a static file found in the publish directory.
+# This should route things like /<funnel_path> to the Flask app.
+# It's crucial that Netlify's static file serving takes precedence for actual files like .js, .css in root.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api_handler/:splat"
+  status = 200
