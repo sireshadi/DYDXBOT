@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Editor</title>
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; }
+        #css-editor, #html-editor { width: 100%; min-height: 250px; font-family: monospace; }
+        #status-message, #asset-status-message { margin-top: 10px; }
+        .editor-section { margin-bottom: 30px; }
+        #asset-list li { margin-bottom: 5px; }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+            margin: 10px 0; /* Adjusted margin for inline display or specific positioning */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Page Editor</h1>
+
+        <div class="editor-section">
+            <h2 id="editing-funnel-link-path">Editing: <span>N/A</span></h2>
+            <div class="form-group">
+                <label for="funnel-link-selector">Select Funnel Link to Edit:</label>
+                <select id="funnel-link-selector" class="form-control">
+                    <option value="">-- Select a Link --</option>
+                </select>
+                <div class="loader" id="link-selector-loader" style="margin: 5px 0;"></div>
+            </div>
+             <div class="loader" id="page-content-loader" style="margin: 10px auto;"></div> <!-- General loader for page content area -->
+        </div>
+
+        <div class="editor-section">
+            <h3>CSS Editor</h3>
+            <textarea id="css-editor" class="form-control" placeholder="Enter your CSS here..."></textarea>
+        </div>
+
+        <div class="editor-section">
+            <h3>Page Content Editor (GrapesJS)</h3>
+            <div id="gjs" style="height:70vh; border: 1px solid #ddd;"></div>
+        </div>
+
+        <button id="save-button" class="btn btn-primary">Save Content</button>
+        <div class="loader" id="save-button-loader" style="display: inline-block; margin-left: 10px; vertical-align: middle;"></div>
+        <div id="status-message" class="alert" style="display: none;"></div>
+
+        <hr class="my-4">
+
+        <div class="editor-section">
+            <h3>My Assets</h3>
+            <div class="mb-2">
+                <input type="file" id="asset-upload-input" class="form-control-file d-inline-block">
+                <button id="upload-asset-button" class="btn btn-secondary btn-sm">Upload Asset</button>
+                <div class="loader" id="asset-upload-loader" style="display: inline-block; margin-left: 10px; vertical-align: middle;"></div>
+            </div>
+            <div id="asset-status-message" class="alert" style="display: none;"></div>
+            <p class="text-muted small">Uploaded assets will appear below. You can copy their paths to use in your HTML/CSS.</p>
+            <div class="loader" id="asset-list-loader" style="margin: 10px auto;"></div>
+            <ul id="asset-list" class="list-unstyled">
+                <!-- Assets will be listed here -->
+            </ul>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script src="editor.js" defer></script>
+</body>
+</html>
