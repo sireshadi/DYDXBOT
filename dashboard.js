@@ -11,8 +11,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const noFunnelLinksMessage = document.getElementById('noFunnelLinksMessage');
     const referredSignupsCountSpan = document.getElementById('referredSignupsCount');
 
+    // Loader elements
+    const funnelLinksLoader = document.getElementById('funnel-links-loader');
+    const statsLoader = document.getElementById('stats-loader');
+
+    // Favicon elements
+    const faviconUploadInput = document.getElementById('favicon-upload-input');
+    const uploadFaviconButton = document.getElementById('upload-favicon-button');
+    const faviconStatusMessageDiv = document.getElementById('favicon-status-message');
+    const currentFaviconPreviewImg = document.getElementById('current-favicon-preview');
+    const noFaviconMessageSpan = document.getElementById('no-favicon-message');
+
+
     const API_BASE_URL = 'http://127.0.0.1:5000/api'; // Assuming backend runs here
     const FRONTEND_DOMAIN = 'unhyreable.com'; // For displaying full URLs
+
+    // --- Loader Helper Functions ---
+    function showLoader(loaderElement) {
+        if (loaderElement) loaderElement.style.display = 'block';
+    }
+
+    function hideLoader(loaderElement) {
+        if (loaderElement) loaderElement.style.display = 'none';
+    }
 
     // --- General Message Display ---
     function displayMessage(element, message, isError = false) {
@@ -39,7 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.is_authenticated) {
                 if (userEmailSpan) userEmailSpan.textContent = data.email;
                 if (welcomeMessageDiv) welcomeMessageDiv.textContent = `Welcome, ${data.email}!`;
-                // Load dashboard data
+
+                // Display current favicon if available
+                if (data.favicon_url) {
+                    if (currentFaviconPreviewImg) {
+                        currentFaviconPreviewImg.src = data.favicon_url;
+                        currentFaviconPreviewImg.style.display = 'inline-block';
+                    }
+                    if (noFaviconMessageSpan) noFaviconMessageSpan.style.display = 'none';
+                } else {
+                    if (currentFaviconPreviewImg) currentFaviconPreviewImg.style.display = 'none';
+                    if (noFaviconMessageSpan) noFaviconMessageSpan.style.display = 'inline-block';
+                }
+
+                // Load other dashboard data
                 loadFunnelLinks();
                 loadReferredSignupsCount();
             } else {
@@ -108,6 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Fetch and Display Funnel Links ---
     async function loadFunnelLinks() {
+        showLoader(funnelLinksLoader);
+        if (funnelLinksTableBody) funnelLinksTableBody.style.display = 'none'; // Hide table while loading
+        if (noFunnelLinksMessage) noFunnelLinksMessage.classList.add('hidden'); // Hide no links message
+
         try {
             const response = await fetch(`${API_BASE_URL}/funnels/my_links`);
              if (response.status === 401) { // Not logged in
@@ -132,18 +170,47 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="px-5 py-3 border-b border-gray-200 bg-white text-sm">${link.path_identifier}</td>
                         <td class="px-5 py-3 border-b border-gray-200 bg-white text-sm">${link.click_count}</td>
                         <td class="px-5 py-3 border-b border-gray-200 bg-white text-sm">${link.leads_generated_count}</td>
+                        <td class="px-5 py-3 border-b border-gray-200 bg-white text-sm">
+                            <button class="edit-page-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs"
+                                    data-funnel-link-id="${link.id}"
+                                    data-funnel-link-path="${link.path_identifier}">
+                                Edit Page
+                            </button>
+                        </td>
                     `;
                 });
             }
         } catch (error) {
             console.error('Error loading funnel links:', error);
-            if (funnelLinksTableBody) funnelLinksTableBody.innerHTML = `<tr><td colspan="4" class="text-red-500 p-4">Error loading links.</td></tr>`;
-            if (noFunnelLinksMessage) noFunnelLinksMessage.classList.add('hidden');
+            if (funnelLinksTableBody) funnelLinksTableBody.innerHTML = `<tr><td colspan="5" class="text-red-500 p-4">Error loading links.</td></tr>`;
+            if (noFunnelLinksMessage) noFunnelLinksMessage.classList.add('hidden'); // Keep hidden on error
+        } finally {
+            hideLoader(funnelLinksLoader);
+            if (funnelLinksTableBody) funnelLinksTableBody.style.display = ''; // Show table again
+            // noFunnelLinksMessage visibility is handled inside try block based on data
         }
+    }
+
+    // --- Event listener for Edit Page buttons (using event delegation) ---
+    if (funnelLinksTableBody) {
+        funnelLinksTableBody.addEventListener('click', function(event) {
+            if (event.target.classList.contains('edit-page-button')) {
+                const button = event.target;
+                const funnelLinkId = button.dataset.funnelLinkId;
+                if (funnelLinkId) {
+                    window.location.href = `/editor.html?funnel_link_id=${funnelLinkId}`;
+                } else {
+                    console.error('Funnel Link ID not found on button.');
+                    alert('Could not find the link ID to edit.');
+                }
+            }
+        });
     }
 
     // --- Fetch and Display Referred Signups Count ---
     async function loadReferredSignupsCount() {
+        showLoader(statsLoader);
+        if (referredSignupsCountSpan) referredSignupsCountSpan.style.display = 'none';
         try {
             const response = await fetch(`${API_BASE_URL}/analytics/my_referred_signups_count`);
             if (response.status === 401) { // Not logged in
@@ -162,9 +229,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 referredSignupsCountSpan.textContent = 'Error';
                 referredSignupsCountSpan.classList.add('text-red-500');
             }
+        } finally {
+            hideLoader(statsLoader);
+            if (referredSignupsCountSpan) referredSignupsCountSpan.style.display = '';
         }
     }
 
     // --- Initial Load ---
     checkAuth(); // This will trigger other data loads if authentication is successful
+
+    // --- Favicon Upload ---
+    async function handleFaviconUpload() {
+        if (!faviconUploadInput || !faviconUploadInput.files || faviconUploadInput.files.length === 0) {
+            displayMessage(faviconStatusMessageDiv, 'Please select a file to upload.', true);
+            return;
+        }
+        const file = faviconUploadInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Consider adding a small loader specific to the favicon upload button if desired
+        if (uploadFaviconButton) uploadFaviconButton.disabled = true;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/user/favicon`, {
+                method: 'POST',
+                body: formData,
+                // Content-Type is automatically set by browser for FormData
+            });
+            const data = await response.json(); // Always expect JSON back for messages
+
+            if (response.ok) {
+                displayMessage(faviconStatusMessageDiv, data.message || 'Favicon uploaded successfully!', false);
+                if (data.favicon_url && currentFaviconPreviewImg) {
+                    currentFaviconPreviewImg.src = data.favicon_url + '?t=' + new Date().getTime(); // Cache buster
+                    currentFaviconPreviewImg.style.display = 'inline-block';
+                }
+                if (noFaviconMessageSpan) noFaviconMessageSpan.style.display = 'none';
+                faviconUploadInput.value = ''; // Clear the file input
+            } else {
+                displayMessage(faviconStatusMessageDiv, data.message || 'Failed to upload favicon.', true);
+            }
+        } catch (error) {
+            console.error('Favicon upload error:', error);
+            displayMessage(faviconStatusMessageDiv, 'An error occurred during favicon upload.', true);
+        } finally {
+            if (uploadFaviconButton) uploadFaviconButton.disabled = false;
+        }
+    }
+
+    if (uploadFaviconButton) {
+        uploadFaviconButton.addEventListener('click', handleFaviconUpload);
+    }
 });
