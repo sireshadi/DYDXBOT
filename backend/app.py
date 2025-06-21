@@ -775,6 +775,7 @@ def create_app():
     @app.cli.command('init-db')
     def init_db_command():
         """Initializes the database and creates tables."""
+        from .models import User, FunnelLink, Lead, UserPage, UserAsset # Explicit import for CLI context
         # No need to check/create instance_folder here for db.create_all(),
         # as SQLAlchemy uses the app's configured URI which includes the instance path.
         with app.app_context(): 
