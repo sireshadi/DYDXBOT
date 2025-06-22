@@ -106,8 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     displayMessage(data.message || 'Login successful!');
-                    // In a real app, you'd redirect or update UI for logged-in state
-                    loginForm.reset();
+                    // Redirect to dashboard on successful login
+                    window.location.href = '/dashboard.html';
+                    loginForm.reset(); // You might reset the form before redirecting, or not, depending on UX preference.
                 } else {
                     displayMessage(data.error || 'Login failed. Please check your credentials.', true);
                 }

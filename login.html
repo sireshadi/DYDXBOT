@@ -5,7 +5,16 @@
     <title>Login</title>
     <!-- Optional: Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com" defer></script>
-    <link rel="stylesheet" href="style.css"> <!-- Or use Tailwind classes directly -->
+    <!-- <link rel="stylesheet" href="style.css"> Or use Tailwind classes directly --> <!-- Removed dead link -->
+
+    <!-- Google Fonts: Inter (assuming Inter is the desired base font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"></noscript>
+    <style>
+        body { font-family: 'Inter', sans-serif; } /* Apply Inter font if not already default */
+    </style>
 </head>
 <body class="bg-gray-100"> <!-- Removed flex and h-screen for full-page layout -->
     <nav class="bg-gray-900 text-gray-300 p-4">
