@@ -1,0 +1,14 @@
+# Environment variables
+.env
+
+# Output files
+output/*
+!output/.gitkeep # Allow keeping the directory if empty, but ignore contents
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/

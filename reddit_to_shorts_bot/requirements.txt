@@ -1,0 +1,4 @@
+praw
+gTTS
+beautifulsoup4
+python-dotenv
