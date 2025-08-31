@@ -23,6 +23,13 @@
             background-color: #111827; /* Dark background to match your site's feel */
             color: #E5E7EB; /* Light text for contrast */
         }
+        main {
+            animation: fadeInPage 1s ease-out forwards;
+        }
+        @keyframes fadeInPage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         /* Style for the FAQ accordion */
         .accordion-content {
             max-height: 0;
@@ -44,6 +51,15 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .section-animate {
+            opacity: 0;
+            transform: translateY(20px); /* Initial transform */
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .section-animate.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -53,7 +69,7 @@
       You can paste this entire HTML block into a custom HTML section in the GoDaddy site builder.
     -->
     <main>
-        <div class="container mx-auto px-6 py-12 md:py-20">
+        <div class="container mx-auto px-4 sm:px-6 py-12 md:py-20">
 
             <!-- ===== HERO SECTION ===== -->
         <!-- This is the first thing visitors see. The goal is to grab attention and state your value proposition clearly. -->
@@ -76,11 +92,11 @@
 
         <!-- ===== HOW IT WORKS SECTION ===== -->
         <!-- This section builds interest by explaining your process in simple, easy-to-understand steps. -->
-        <section id="how-it-works" class="py-20 md:py-28">
+        <section id="how-it-works" class="py-20 md:py-28 section-animate">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Your Path to Mining Profits in 3 Steps</h2>
             <div class="grid md:grid-cols-3 gap-8 md:gap-12 text-center">
                 <!-- Step 1 -->
-                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
                     <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
                         <i data-lucide="dollar-sign" class="w-8 h-8 text-amber-400"></i>
                     </div>
@@ -88,7 +104,7 @@
                     <p class="text-gray-400">Select an investment level that aligns with your goals. Your capital directly funds the acquisition and operation of high-efficiency mining hardware.</p>
                 </div>
                 <!-- Step 2 -->
-                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
                     <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
                         <i data-lucide="cpu" class="w-8 h-8 text-amber-400"></i>
                     </div>
@@ -96,7 +112,7 @@
                     <p class="text-gray-400">We handle all the technical details—procurement, setup, and 24/7 maintenance at our secure, low-cost energy facilities.</p>
                 </div>
                 <!-- Step 3 -->
-                <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border border-gray-700 shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
                     <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/20 mx-auto mb-6">
                          <i data-lucide="bitcoin" class="w-8 h-8 text-amber-400"></i>
                     </div>
@@ -108,51 +124,54 @@
 
         <!-- ===== OUR OPERATION / TRUST SECTION ===== -->
         <!-- This is CRITICAL for building trust. Replace placeholders with real images of your setup and team. -->
-        <section id="operation" class="py-20 md:py-28 bg-gray-900 rounded-2xl px-6">
+        <section id="operation" class="py-20 md:py-28 bg-gray-900 rounded-2xl px-4 sm:px-6 section-animate">
              <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Our Operation: Where Your Investment Comes to Life</h2>
              <div class="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                     <h3 class="text-2xl font-bold mb-4 btc-gradient-text">Transparency is Our Foundation</h3>
-                    <p class="text-gray-400 mb-4">We're not another faceless cloud mining platform. We're a team of engineers and finance professionals passionate about making Bitcoin accessible. Your investment is tied to real, physical hardware that you can see.</p>
+                    <p class="text-gray-400 mb-4">We're not another faceless cloud mining platform. We're a team of engineers and financial professionals passionate about making Bitcoin accessible. Your investment is tied to real, physical hardware that you can see.</p>
                     <p class="text-gray-400">Our advantage comes from strategic energy contracts and bulk hardware purchasing—benefits we pass directly on to you.</p>
                     <!-- IMPORTANT: Introduce yourself here. Be authentic. -->
                     <div class="mt-6 border-t border-amber-500/30 pt-6">
-                        <p class="font-bold text-white">John Doe, Founder</p>
-                        <p class="text-gray-400">"I started this project because I believe in the future of decentralized finance, but saw that the average person was being priced out of participating. We're here to change that by providing transparent, accessible mining opportunities for everyone."</p>
+                        <p class="font-bold text-white">The Unhyreable Team</p>
+                        <p class="text-gray-400">"We started this project because we believe in the future of decentralized finance and saw that the average person was being priced out of participating. We're here to change that by providing transparent, accessible mining opportunities for everyone."</p>
                     </div>
                 </div>
                 <div>
-                    <!-- TODO: Replace these placeholder images with REAL photos of your mining rigs and facility. This is the most important trust signal you have. -->
-                    <img src="https://placehold.co/600x400/111827/F7931A?text=Our+Mining+Hardware" alt="Bitcoin mining hardware" class="rounded-lg shadow-2xl mb-4" onerror="this.onerror=null;this.src='https://placehold.co/600x400';">
-                    <p class="text-center text-gray-500 text-sm">A glimpse of our latest-generation ASIC miners at work.</p>
+                    <img src="https://unsplash.com/photos/2JJ3wBHu4_0/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTh8fGRhdGElMjBjZW50ZXIlMjBzZXJ2ZXJ8ZW58MHx8fHwxNzUwMjc2ODM2fDA&force=true" alt="Rack of servers in a modern data center." class="rounded-lg shadow-2xl mb-4 aspect-video object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/111827/F7931A?text=Error+Loading+Image';">
+                    <p class="text-center text-gray-500 text-sm">State-of-the-art infrastructure powering your Bitcoin mining.</p>
                 </div>
              </div>
         </section>
 
         <!-- ===== THE OFFER / INVESTMENT TIERS ===== -->
         <!-- Clearly define what people are investing in. Be specific with numbers. -->
-        <section id="offer" class="py-20 md:py-28">
+        <section id="offer" class="py-20 md:py-28 section-animate">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Choose Your Mining Package</h2>
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Tier 1 -->
-                <div class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 flex flex-col shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold mb-2">Starter Miner</h3>
-                    <p class="text-amber-400 text-4xl font-black mb-4">$500</p>
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"> {/* Adjusted max-width for 3 cols */}
+                <!-- Tier 1: Starter Plan -->
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border-2 border-gray-700 flex flex-col shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+                    <h3 class="text-2xl font-bold mb-2">Starter Plan</h3>
+                    <p class="text-amber-400 text-3xl sm:text-4xl font-black mb-1">$100</p>
+                    <p class="text-xs text-gray-400 mb-4">(payable in Bitcoin equivalent)</p>
                     <ul class="space-y-3 text-gray-300 mb-8 flex-grow">
-                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Target Hashrate: X TH/s (projected)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Target Hashrate: 100-200 TH/s (projected)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Projected Returns: $250 (in Bitcoin equivalent)</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Daily Payouts</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>24/7 Monitoring Dashboard</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>All-inclusive fees</li>
                     </ul>
                     <a href="#invest" class="w-full text-center bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-150 ease-in-out hover:scale-105 active:scale-95">Select Plan</a>
                 </div>
-                <!-- Tier 2 (Highlight) -->
-                <div class="bg-gray-800 p-8 rounded-2xl border-2 border-amber-500 flex flex-col relative shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1">
+                <!-- Tier 2: Pro Plan (Highlight) -->
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border-2 border-amber-500 flex flex-col relative shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1">
                     <span class="absolute top-0 right-8 -translate-y-1/2 bg-amber-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</span>
-                    <h3 class="text-2xl font-bold mb-2">Pro Miner</h3>
-                    <p class="text-amber-400 text-4xl font-black mb-4">$2,500</p>
+                    <h3 class="text-2xl font-bold mb-2">Pro Plan</h3>
+                    <p class="text-amber-400 text-3xl sm:text-4xl font-black mb-1">$1,000</p>
+                    <p class="text-xs text-gray-400 mb-4">(payable in Bitcoin equivalent)</p>
                     <ul class="space-y-3 text-gray-300 mb-8 flex-grow">
-                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Target Hashrate: Y TH/s (projected)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Target Hashrate: 500-700 TH/s (projected)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Projected Returns: $2,900 (in Bitcoin equivalent)</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Daily Payouts</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>24/7 Monitoring Dashboard</li>
                         <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>All-inclusive fees</li>
@@ -160,41 +179,57 @@
                     </ul>
                     <a href="#invest" class="w-full text-center bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition-all duration-150 ease-in-out hover:scale-105 active:scale-95">Select Plan</a>
                 </div>
+                <!-- Tier 3: Elite Plan -->
+                <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl border-2 border-gray-700 flex flex-col shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+                    <h3 class="text-2xl font-bold mb-2">Elite Plan</h3>
+                    <p class="text-amber-400 text-3xl sm:text-4xl font-black mb-1">$10,000</p>
+                    <p class="text-xs text-gray-400 mb-4">(payable in Bitcoin equivalent)</p>
+                    <ul class="space-y-3 text-gray-300 mb-8 flex-grow">
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Target Hashrate: 900-1000 TH/s (projected)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Projected Returns: $40,000 (in Bitcoin equivalent)</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Daily Payouts</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>24/7 Monitoring Dashboard</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>All-inclusive fees</li>
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Highest Priority Allocation</li> {/* Changed from Pro's "Priority" */}
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>Dedicated Support</li> {/* Added new feature */}
+                    </ul>
+                    <a href="#invest" class="w-full text-center bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-150 ease-in-out hover:scale-105 active:scale-95">Select Plan</a>
+                </div>
             </div>
         </section>
 
         <!-- ===== FAQ SECTION ===== -->
         <!-- Answer common questions proactively to build confidence and reduce support requests. -->
-        <section id="faq" class="py-20 md:py-28 max-w-4xl mx-auto">
+        <section id="faq" class="py-20 md:py-28 max-w-4xl mx-auto section-animate">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
             <div class="space-y-4">
                 <!-- FAQ Item 1 -->
                 <div class="bg-gray-800 rounded-lg">
-                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-4 sm:p-6 font-bold">
                         <span>What are the risks?</span>
                         <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
                     </button>
-                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                    <div class="accordion-content px-4 sm:px-6 pb-4 sm:pb-6 text-gray-400">
                         <p>All investments carry risk. The primary risks in Bitcoin mining are the volatility of Bitcoin's price and increases in global mining difficulty. We mitigate these by operating with very low energy costs, giving our operation a higher resilience to price fluctuations. We encourage you to invest only what you are comfortable with.</p>
                     </div>
                 </div>
                 <!-- FAQ Item 2 -->
                 <div class="bg-gray-800 rounded-lg">
-                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-4 sm:p-6 font-bold">
                         <span>How are fees calculated?</span>
                         <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
                     </button>
-                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                    <div class="accordion-content px-4 sm:px-6 pb-4 sm:pb-6 text-gray-400">
                         <p>Our model is simple. The investment packages include all operational costs, including electricity, maintenance, and hosting for the lifetime of the hardware. There are no hidden monthly fees. We retain a small percentage of the Bitcoin mined as our service fee, which aligns our success with yours.</p>
                     </div>
                 </div>
                 <!-- FAQ Item 3 -->
                 <div class="bg-gray-800 rounded-lg">
-                    <button class="accordion-button w-full flex justify-between items-center text-left p-6 font-bold">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-4 sm:p-6 font-bold">
                         <span>How do I withdraw my earnings?</span>
                         <i data-lucide="chevron-down" class="icon w-5 h-5"></i>
                     </button>
-                    <div class="accordion-content px-6 pb-6 text-gray-400">
+                    <div class="accordion-content px-4 sm:px-6 pb-4 sm:pb-6 text-gray-400">
                         <p>Your mined Bitcoin is credited to your account daily. You can request a withdrawal of your earnings to your personal Bitcoin wallet at any time. Withdrawals are processed within 24 hours.</p>
                     </div>
                 </div>
@@ -203,10 +238,10 @@
 
         <!-- ===== CTA / LEAD GENERATION FORM ===== -->
         <!-- This is the Action stage of the funnel. Keep the form simple to maximize conversions. -->
-        <section id="invest" class="py-20 md:py-28">
-            <div class="bg-gray-800 rounded-2xl p-8 md:p-12 max-w-4xl mx-auto text-center border border-amber-500/50 shadow-2xl">
+        <section id="invest" class="py-20 md:py-28 section-animate">
+            <div class="bg-gray-800 rounded-2xl p-6 sm:p-8 md:p-12 max-w-4xl mx-auto text-center border border-amber-500/50 shadow-2xl">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Start Mining?</h2>
-                <p class="text-gray-400 mb-8">Take the first step towards <span class="font-semibold text-gray-200">your</span> Bitcoin mining journey! Fill out the form to receive our detailed prospectus and connect with an advisor who can guide you through our simple onboarding process. Expect a response within one business day.</p>
+                <p class="text-gray-400 mb-8">Take the first step toward <span class="font-semibold text-gray-200">your</span> Bitcoin mining journey! Fill out the form to receive our detailed prospectus and connect with an advisor who can guide you through our simple onboarding process. Expect a response within one business day.</p>
 
                 <!--
                   FORM SETUP:
@@ -220,9 +255,10 @@
                         <input type="email" name="email" placeholder="Your Email" required class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                     </div>
                     <select name="investment_level" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 mb-4 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                        <option>Interested in: Starter Miner ($500)</option>
-                        <option>Interested in: Pro Miner ($2,500)</option>
-                        <option>Interested in: Larger Investment (+$10k)</option>
+                        <option>Interested in: Starter Plan ($100)</option>
+                        <option>Interested in: Pro Plan ($1,000)</option>
+                        <option>Interested in: Elite Plan ($10,000)</option>
+                        <option>Interested in: Larger Investment (Custom)</option>
                     </select>
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-lg transition-all duration-150 ease-in-out hover:scale-105 active:scale-95">
                         Request Prospectus
@@ -234,7 +270,7 @@
 
         <!-- ===== FOOTER & DISCLAIMER ===== -->
         <footer class="text-center text-gray-500 text-sm pt-12 border-t border-gray-800">
-            <p class="mb-4">&copy; 2025 Unhyreable.com. All Rights Reserved.</p>
+            <p class="mb-4">&copy; 2024 Unhyreable.com. All Rights Reserved.</p>
             <p class="max-w-3xl mx-auto">
                 <strong>Risk Disclosure:</strong> Investing in cryptocurrency mining involves significant risk and is not suitable for all investors. The value of Bitcoin is highly volatile and can fluctuate dramatically. Past performance is not indicative of future results. Please conduct your own research and consider your financial situation before investing. This is not financial advice.
             </p>
@@ -294,13 +330,23 @@ Transparency is Our Foundation. We're a team of engineers and finance profession
 INVESTMENT PACKAGES
 -------------------
 - Starter Miner: $500
-  - Estimated X TH/s Hashrate
+  - Target Hashrate: 100-200 TH/s (projected)
+  - Projected Returns: $250 (in Bitcoin equivalent)
   - Daily Payouts
   - 24/7 Monitoring Dashboard
   - All-inclusive fees
 
-- Pro Miner: $2,500
-  - Estimated Y TH/s Hashrate
+- Pro Plan: $1,000
+  - Target Hashrate: 500-700 TH/s (projected)
+  - Projected Returns: $2,900 (in Bitcoin equivalent)
+  - Daily Payouts
+  - 24/7 Monitoring Dashboard
+  - All-inclusive fees
+  - Priority Hardware Allocation
+
+- Elite Plan: $10,000
+  - Target Hashrate: 900-1000 TH/s (projected)
+  - Projected Returns: $40,000 (in Bitcoin equivalent)
   - Daily Payouts
   - 24/7 Monitoring Dashboard
   - All-inclusive fees
@@ -332,6 +378,23 @@ For more details or to begin the investment process, please fill out the form at
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+        });
+
+        // JavaScript for Scroll-Triggered Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section-animate');
+            const observer = new IntersectionObserver(entries => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-visible');
+                  observer.unobserve(entry.target); // Optional: stop observing after first animation
+                }
+              });
+            }, { threshold: 0.1 }); // Adjust threshold as needed (0.1 means 10% of the element is visible)
+
+            sections.forEach(section => {
+              observer.observe(section);
+            });
         });
     </script>
 

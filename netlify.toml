@@ -1,0 +1,85 @@
+[build]
+  # Command to build your site (if any). For now, assumes no specific frontend build step.
+  # Python dependencies for functions will be installed based on requirements.txt in the functions dir or root.
+  command = "echo 'No frontend build step. Backend dependencies in backend/requirements.txt'"
+
+  # Directory containing static assets to deploy.
+  publish = "/"
+
+  # Directory where Netlify Functions are located.
+  # The actual functions code will be in a subdirectory, typically specified in the function's source.
+  # This 'functions' key under [build] tells Netlify where to look for functions to build.
+  functions = "backend/functions/"
+
+[dev]
+  # Configuration for `netlify dev` local development server
+  command = "python -m flask --app backend/app:create_app --debug run -p 8888" # Use a common Netlify dev port
+  targetPort = 5000 # Port your Flask app actually runs on when `flask run` is used directly
+  publish = "/"
+  # Note: `netlify dev` tries to mimic Netlify's environment. `targetPort` is where it expects your backend.
+  # The `command` here is what `netlify dev` would try to run if you didn't have a separate backend process.
+  # For Flask, often you run Flask separately and tell `netlify dev` its port.
+
+# Redirects for API and Flask-handled routes to Netlify Functions
+# All API calls and Flask-specific routes go to the 'api' function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat" # :splat captures the rest of the path
+  status = 200 # Rewrite, not a redirect
+
+# Redirect for funnel paths (e.g., /myfunnellink)
+# This needs to be broad enough for any funnel path but specific enough not to catch static files.
+# It's tricky. A common pattern is to let Flask handle all non-file routes.
+# The rule below assumes funnel paths don't have extensions like .html, .js etc.
+# And that Flask's /<funnel_path> route is robust.
+
+# If your funnel paths are handled by the same Flask app, they are covered by the /* rule below
+# if they don't match a static file.
+# Example of a more specific redirect if needed:
+# [[redirects]]
+#   from = "/:funnel_path_slug"
+#   to = "/.netlify/functions/api/:funnel_path_slug"
+#   status = 200
+#   conditions = {Role = ["!admin"]} # Example condition, not actually needed here
+#   force = true # Ensures this rule is processed
+
+# Serve static HTML files without the .html extension (pretty URLs)
+[[redirects]]
+  from = "/signup"
+  to = "/signup.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+# For /dashboard, if Flask's @login_required should gate it server-side BEFORE serving HTML:
+[[redirects]]
+  from = "/dashboard"
+  to = "/.netlify/functions/api/dashboard.html" # Flask route that serves dashboard.html
+  status = 200
+  # force = true # May be needed if /dashboard.html static file also exists
+
+# This is a catch-all for Single Page Applications or apps where the backend handles routing.
+# It sends any request that doesn't match a static file in 'publish' to your main 'api' function.
+# Your Flask app will then need to handle these routes (including 404s).
+# This should be the LAST redirect rule.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Specifies the runtime environment for Netlify Functions.
+[functions]
+  directory = "backend/functions/"
+  # "api" is the name of our main function file (api.py or api/api.js etc.)
+  # If you have multiple function files, they would be configured here or be separate.
+  # For a Flask app proxied as one function, it's often one main entry point.
+
+# Environment variables for the build process and functions
+[build.environment]
+  PYTHON_VERSION = "3.9" # Specify your Python version
+  # Any other build-time environment variables can go here.
+  # Runtime environment variables (like SECRET_KEY, DATABASE_URL for a real DB)
+  # should be set in the Netlify UI for security.
